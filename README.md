@@ -13,7 +13,7 @@ you could easily config the platform to your chip in platformio.ini
 2. You need to install [platformio](https://platformio.org/) before using it. However, it is easier to change the code to compatiable with Arduino IDE
 
 3. You can use:
-
+```
 make (all): to compile the firmware
 
 make upload: to upload to your device
@@ -21,7 +21,7 @@ make upload: to upload to your device
 make clean: clean the project
 
 make update: to update all the libraries
-
+```
 4. Move the device and enjoy it
 
 ## API Functions
