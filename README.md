@@ -36,6 +36,11 @@ typedef struct {
    float pitch; 
 } ORI_DATA; //measured by degrees
 
+***CALIBRATION***
+
+The bno055 library contains a way to calibrate device in steup: 
+A pre-defined calibration data containg offsets is stored in newcalib array, and then is loaded to bno055 chip by calling bno.setSensorOffsets(newCalib). After that, user still need to move the device slowly to make sure the device is fully calibrated. When the bno.isFullycalibrated() returns true, the device will generate a new set of Calibration data, which can used to update the newCalib array next time.
+
 ***LICENSE***
 
 MIT
