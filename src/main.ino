@@ -30,6 +30,35 @@ Adafruit_BNO055 bno = Adafruit_BNO055(55);
 
 /**************************************************************************/
 /*
+    Display the raw calibration offset and radius data
+    */
+/**************************************************************************/
+void displaySensorOffsets(const adafruit_bno055_offsets_t &calibData)
+{
+    Serial.print("Accelerometer: ");
+    Serial.print(calibData.accel_offset_x); Serial.print(" ");
+    Serial.print(calibData.accel_offset_y); Serial.print(" ");
+    Serial.print(calibData.accel_offset_z); Serial.print(" ");
+
+    Serial.print("\nGyro: ");
+    Serial.print(calibData.gyro_offset_x); Serial.print(" ");
+    Serial.print(calibData.gyro_offset_y); Serial.print(" ");
+    Serial.print(calibData.gyro_offset_z); Serial.print(" ");
+
+    Serial.print("\nMag: ");
+    Serial.print(calibData.mag_offset_x); Serial.print(" ");
+    Serial.print(calibData.mag_offset_y); Serial.print(" ");
+    Serial.print(calibData.mag_offset_z); Serial.print(" ");
+
+    Serial.print("\nAccel Radius: ");
+    Serial.print(calibData.accel_radius);
+
+    Serial.print("\nMag Radius: ");
+    Serial.print(calibData.mag_radius);
+}
+
+/**************************************************************************/
+/*
     Displays some basic information on this sensor from the unified
     sensor API sensor_t type (see Adafruit_Sensor for more information)
 */
@@ -70,11 +99,30 @@ void setup(void)
 
   delay(1000);
 
+  /* Calibration Data*/
+  adafruit_bno055_offsets_t newCalib = {-273, 0, -273, 0, 0, -1, -129, 278, 46, 1000, 805};
+  displaySensorOffsets(newCalib);
+  Serial.println("\n\nRestoring Calibration data to the BNO055...");
+  bno.setSensorOffsets(newCalib);
+
   /* Use external crystal for better accuracy */
   bno.setExtCrystalUse(true);
 
   /* Display some basic information on this sensor */
   displaySensorDetails();
+
+  /* Calibrate Again*/
+  sensors_event_t event;
+  while(!bno.isFullyCalibrated())
+  {
+            bno.getEvent(&event);
+            delay(BNO055_SAMPLERATE_DELAY_MS);
+  }
+  Serial.println("\nFully calibrated!");
+  Serial.println("--------------------------------");
+  Serial.println("Calibration Results: ");
+  bno.getSensorOffsets(newCalib);
+  displaySensorOffsets(newCalib);
 }
 
 /**************************************************************************/
