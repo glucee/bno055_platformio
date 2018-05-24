@@ -1,6 +1,6 @@
 ***Description***
 
-bno055 library used in platformio, the library is highly inspired by Adafruit_BNO055 library
+bno055 library used in platformio, the library is highly inspired by Adafruit_BNO055 library and contains automatically calibration method.
 
 It has been tested on adafruit bno055 connecting to ESP8266 via I2C
 
