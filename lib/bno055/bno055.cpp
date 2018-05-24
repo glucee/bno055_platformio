@@ -58,6 +58,7 @@ void displaySensorOffsets(const adafruit_bno055_offsets_t &calibData)
 
     Serial.print("\nMag Radius: ");
     Serial.print(calibData.mag_radius);
+    Serial.print("\n");
 }
 
 /**************************************************************************/
@@ -115,18 +116,17 @@ void setup_bno055(void)
   displaySensorDetails();
 
   /* Calibrate Again*/
-  sensors_event_t event;
   while(!bno.isFullyCalibrated())
   {
-            bno.getEvent(&event);
             delay(BNO055_SAMPLERATE_DELAY_MS);
   }
   Serial.println("\nFully calibrated!");
   Serial.println("--------------------------------");
-  Serial.println("Calibration Results: ");
+  Serial.println("New Calibration Results: ");
   bno.getSensorOffsets(newCalib);
   displaySensorOffsets(newCalib);
   bno.setSensorOffsets(newCalib);
+  Serial.println("Please update these Calibration Results into the new calib array");
 }
 
 /**************************************************************************/
