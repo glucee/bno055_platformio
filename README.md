@@ -15,11 +15,8 @@ you could easily config the platform to your chip in platformio.ini
 3. You can use:
 ```
 make (all): to compile the firmware
-
 make upload: to upload to your device
-
 make clean: clean the project
-
 make update: to update all the libraries
 ```
 4. Move the device and enjoy it
@@ -28,15 +25,14 @@ make update: to update all the libraries
 ```
 
 //setup bno055, if the device is not setup successfully, it will enter forever loop
-
 bool setup_bno055();
 
 //option functions:
-
 //get the yaw, roll and pitch (degrees) from BNO055
 
 ORI_DATA getori_bno055();
 
+//Data structure
 typedef struct {
    float yaw; 
    float roll; 
@@ -44,11 +40,13 @@ typedef struct {
 } ORI_DATA; //measured by degrees
 ```
 
-## CALIBRATION
+## Calibration
 
 The bno055 library contains a way to calibrate device in steup: 
-A pre-defined calibration data containg offsets is stored in newcalib array, and then is loaded to bno055 chip by calling bno.setSensorOffsets(newCalib). After that, user still need to move the device slowly to make sure the device is fully calibrated. When the bno.isFullycalibrated() returns true, the device will generate a new set of Calibration data, which can used to update the newCalib array next time.
+A pre-defined calibration data containg offsets is stored in newcalib array, and then is loaded to bno055 chip by calling bno.setSensorOffsets(newCalib). 
+After that, user still needs to move the device slowly to make sure the device is fully calibrated. There will be a while loop for calibration. 
+When the bno.isFullycalibrated() returns true, the device will generate a new set of Calibration data, which can used to update the newCalib array next time.
 
-## LICENSE
+## Licence
 
 MIT
