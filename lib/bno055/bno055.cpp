@@ -1,3 +1,4 @@
+#include <bno055.h>
 #include <stdlib.h>
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
@@ -22,6 +23,7 @@
    History
    =======
    2015/MAR/03  - First release (KTOWN)
+   2018/MAY/18  - Second release Glucee
 */
 
 /* Set the delay between fresh samples */
@@ -85,7 +87,7 @@ void displaySensorDetails(void)
     Arduino setup function (automatically called at startup)
 */
 /**************************************************************************/
-void setup(void)
+void setup_bno055(void)
 {
   Serial.begin(115200);
   Serial.println("Orientation Sensor Test"); Serial.println("");
@@ -133,12 +135,8 @@ void setup(void)
     should go here)
 */
 /**************************************************************************/
-void loop(void)
+ORI_DATA getori_bno055(void)
 {
-  /* Get a new sensor event */
-  sensors_event_t event;
-  bno.getEvent(&event);
-
   /* Board layout:
          +----------+
          |         *| RST   PITCH  ROLL  HEADING
@@ -152,6 +150,9 @@ void loop(void)
 
   /* The processing sketch expects data as roll, pitch, heading, this only works in a limited angle range */
   /*
+  sensors_event_t event;
+  bno.getEvent(&event);
+
   Serial.print(F("Orientation: "));
   Serial.print((float)event.orientation.x);
   Serial.print(F(" "));
@@ -165,7 +166,14 @@ void loop(void)
   this works much better than getting it directly from chip*/
   imu::Quaternion quat = bno.getQuat();
   imu::Vector<3> ori = quat.toEuler();
+
+  ORI_DATA ori_data;
+  ori_data.roll = ori.x()*180/3.14;
+  ori_data.pitch = ori.y()*180/3.14;
+  ori_data.yaw = ori.z()*180/3.14;
+
   /* The processing sketch expects data as roll, pitch, heading */
+  /*
   Serial.print(F("Orientation: "));
   Serial.print((float)ori.x()*180/3.14);
   Serial.print(F(" "));
@@ -173,8 +181,14 @@ void loop(void)
   Serial.print(F(" "));
   Serial.print((float)ori.z()*180/3.14);
   Serial.println(F(""));
+  */
 
-   
+  delay(BNO055_SAMPLERATE_DELAY_MS);
+  return ori_data;
+}
+
+void getcal_bno055()
+{
   /* Also send calibration data for each sensor. */
   uint8_t sys, gyro, accel, mag = 0;
   bno.getCalibration(&sys, &gyro, &accel, &mag);
@@ -186,6 +200,4 @@ void loop(void)
   Serial.print(accel, DEC);
   Serial.print(F(" "));
   Serial.println(mag, DEC);
-
-  delay(BNO055_SAMPLERATE_DELAY_MS);
 }
