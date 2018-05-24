@@ -4,6 +4,7 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
+#include <math.h>
 
 /* This driver uses the Adafruit unified sensor library (Adafruit_Sensor),
    which provides a common 'type' for sensor data and some helper functions.
@@ -168,9 +169,9 @@ ORI_DATA getori_bno055(void)
   imu::Vector<3> ori = quat.toEuler();
 
   ORI_DATA ori_data;
-  ori_data.roll = ori.x()*180/3.14;
-  ori_data.pitch = ori.y()*180/3.14;
-  ori_data.yaw = ori.z()*180/3.14;
+  ori_data.roll = ori.x()*180.0f/PI;
+  ori_data.pitch = ori.y()*180.0f/PI;
+  ori_data.yaw = ori.z()*180.0f/PI;
 
   /* The processing sketch expects data as roll, pitch, heading */
   /*
