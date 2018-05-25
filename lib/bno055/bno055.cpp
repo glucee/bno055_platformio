@@ -91,7 +91,6 @@ void displaySensorDetails(void)
 /**************************************************************************/
 void setup_bno055(void)
 {
-  Serial.begin(115200);
   Serial.println("Orientation Sensor Test"); Serial.println("");
 
   /* Initialise the sensor */
