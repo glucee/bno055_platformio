@@ -4,3 +4,6 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .travis.yml
+.vscode/extensions.json
+.vscode/settings.json
+.vscode/tasks.json
