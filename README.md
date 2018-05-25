@@ -10,7 +10,7 @@ you could easily config the platform to your chip in platformio.ini
 
 1. You could connect BNO055 to the MCU according to [this website](https://learn.adafruit.com/adafruit-bno055-absolute-orientation-sensor/overview)
 
-2. You need to install [platformio](https://platformio.org/) before using it. However, it is easier to change the code to compatiable with Arduino IDE
+2. You need to install [platformio](https://platformio.org/) before using the code. However, it is easier to change the code to compatiable with Arduino IDE
 
 3. You can use:
 ```
@@ -20,6 +20,24 @@ make clean: clean the project
 make update: to update all the libraries
 ```
 4. Move the device and enjoy it
+
+5. This code is tested on ESP8266 and Arduino Nano Pro, if you want to use a different MCU, you could easily config it in platformio.ini
+
+For example, the configuration for ESP8266 is:
+```
+[env:featheresp8266]
+platform = espressif8266
+framework = arduino
+board=huzzah
+```
+
+The configuration for Arduino Nano Pro is:
+```
+[env:nanoatmega328]
+platform = atmelavr
+board = nanoatmega328
+framework = arduino
+```
 
 ## API Functions
 ```
