@@ -127,7 +127,7 @@ void setup_bno055(void)
   bno.getSensorOffsets(newCalib);
   displaySensorOffsets(newCalib);
   bno.setSensorOffsets(newCalib);
-  Serial.println("Please update these Calibration Results into the new calib array");
+  //Serial.println("Please update these Calibration Results into the new calib array!");
 }
 
 /**************************************************************************/
