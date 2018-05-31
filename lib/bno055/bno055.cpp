@@ -125,7 +125,7 @@ void setup_bno055(void)
   Serial.println("New Calibration Results: ");
   bno.getSensorOffsets(newCalib);
   displaySensorOffsets(newCalib);
-  bno.setSensorOffsets(newCalib);
+  //bno.setSensorOffsets(newCalib);
   //Serial.println("Please update these Calibration Results into the new calib array!");
 }
 
@@ -165,6 +165,9 @@ ORI_DATA getori_bno055(void)
   /* Get Orientation from Quaternion Data
   this works much better than getting it directly from chip*/
   imu::Quaternion quat = bno.getQuat();
+  quat.normalize();
+  float temp = quat.x();  quat.x() = -quat.y();  quat.y() = temp;
+  quat.z() = -quat.z();
   imu::Vector<3> ori = quat.toEuler();
 
   ORI_DATA ori_data;
