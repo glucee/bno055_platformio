@@ -44,15 +44,16 @@ void displaySensorOffsets(const adafruit_bno055_offsets_t &calibData)
     Serial.print(calibData.accel_offset_y); Serial.print(" ");
     Serial.print(calibData.accel_offset_z); Serial.print(" ");
 
+    Serial.print("\nMag: ");
+    Serial.print(calibData.mag_offset_x); Serial.print(" ");
+    Serial.print(calibData.mag_offset_y); Serial.print(" ");
+    Serial.print(calibData.mag_offset_z); Serial.print(" ");
+
     Serial.print("\nGyro: ");
     Serial.print(calibData.gyro_offset_x); Serial.print(" ");
     Serial.print(calibData.gyro_offset_y); Serial.print(" ");
     Serial.print(calibData.gyro_offset_z); Serial.print(" ");
 
-    Serial.print("\nMag: ");
-    Serial.print(calibData.mag_offset_x); Serial.print(" ");
-    Serial.print(calibData.mag_offset_y); Serial.print(" ");
-    Serial.print(calibData.mag_offset_z); Serial.print(" ");
 
     Serial.print("\nAccel Radius: ");
     Serial.print(calibData.accel_radius);
@@ -103,8 +104,8 @@ void setup_bno055(void)
 
   delay(1000);
 
-  /* Calibration Data*/
-  adafruit_bno055_offsets_t newCalib = {-273, 0, -273, 0, 0, -1, -129, 278, 46, 1000, 750};
+  /* Calibration Data, please note the order is accel, mag, gryo, accel raduis, mag raduis*/
+  adafruit_bno055_offsets_t newCalib = {-273, 0, -273, -129, 278, 46, -1, 2, -1, 1000, 750};
   displaySensorOffsets(newCalib);
   Serial.println("\n\nRestoring Calibration data to the BNO055...");
   bno.setSensorOffsets(newCalib);

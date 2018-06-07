@@ -64,6 +64,7 @@ The bno055 library contains a way to calibrate device in setup_bno055():
 * A pre-defined calibration data containg offsets is stored in newcalib array, and then is loaded to bno055 chip by calling bno.setSensorOffsets(newCalib). 
 * After that, user still needs to move the device slowly to make sure the device is fully calibrated. There will be a while loop for calibration. 
 * When the bno.isFullycalibrated() returns true, the device will generate a new set of Calibration data, which can used to update the newCalib array next time.
+* Please note the newcalib structure when you upload the array
 
 ## Licence
 
