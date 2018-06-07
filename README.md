@@ -2,7 +2,7 @@
 
 bno055 library used in platformio, the library is highly inspired by Adafruit_BNO055 library and contains automatically calibration method.
 
-It has been tested on adafruit bno055 connecting to ESP8266 via I2C
+It has been tested on adafruit bno055 connecting to ESP8266/ESP32 via I2C
 
 you could easily config the platform to your chip in platformio.ini
 
@@ -10,7 +10,9 @@ you could easily config the platform to your chip in platformio.ini
 
 1. You could connect BNO055 to the MCU according to [this website](https://learn.adafruit.com/adafruit-bno055-absolute-orientation-sensor/overview)
 
-2. You need to install [platformio](https://platformio.org/) before using the code. However, it is easier to change the code to compatiable with Arduino IDE
+2. You need to install [platformio](https://platformio.org/) before using the code. However, it is easier to change the code to compatiable with Arduino IDE.
+
+Remeber it will automatically download the Adafruit_BNO055 lib into the .piolibdeps/Adafruit BNO055_ID506
 
 3. You can use:
 ```
@@ -57,6 +59,7 @@ typedef struct {
    float pitch; 
 } ORI_DATA; //measured by degrees
 ```
+For all other functions, please refer to .piolibdeps/Adafruit BNO055_ID506.
 
 ## Calibration
 
