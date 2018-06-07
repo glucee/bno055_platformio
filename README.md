@@ -12,7 +12,7 @@ you could easily config the platform to your chip in platformio.ini
 
 2. You need to install [platformio](https://platformio.org/) before using the code. However, it is easier to change the code to compatiable with Arduino IDE.
 
-Remeber it will automatically download the Adafruit_BNO055 lib into the .piolibdeps/Adafruit BNO055_ID506
+Remeber it will automatically download Adafruit_BNO055 lib into .piolibdeps/Adafruit BNO055_ID506
 
 3. You can use:
 ```
