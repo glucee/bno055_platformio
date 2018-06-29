@@ -1,4 +1,5 @@
 #include "../lib/bno055/bno055.h"
+#include <Arduino.h>
 
 void setup()
 {
