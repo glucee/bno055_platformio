@@ -31,7 +31,7 @@
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
 const adafruit_bno055_offsets_t oldCalib = {-68, -14, -48, -201, 275, 100, 1, -1, -1, 1000, 480};
 
-
+/* Check whether it is fullycalibrated for IMU mode (mag is not used)*/
 bool fullyCalibrated_imu(void) {
     uint8_t system, gyro, accel, mag;
     bno.getCalibration(&system, &gyro, &accel, &mag);
@@ -117,7 +117,7 @@ void setup_bno055(void)
 {
   Serial.println("Orientation Sensor Test"); Serial.println("");
 
-  /* Initialise the sensor */
+  /* Initialise the sensor as relative mode (mag is not used) */
   if(!bno.begin(Adafruit_BNO055::OPERATION_MODE_IMUPLUS))
   {
     /* There was a problem detecting the BNO055 ... check your connections */
