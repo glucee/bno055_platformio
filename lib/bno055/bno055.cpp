@@ -1,10 +1,8 @@
-#include <bno055.h>
+#include "bno055.h"
 #include <stdlib.h>
-#include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
-#include <math.h>
 
 /* This driver uses the Adafruit unified sensor library (Adafruit_Sensor),
    which provides a common 'type' for sensor data and some helper functions.
@@ -31,11 +29,19 @@
 #define BNO055_SAMPLERATE_DELAY_MS (100)
 
 Adafruit_BNO055 bno = Adafruit_BNO055(55);
+const adafruit_bno055_offsets_t oldCalib = {-68, -14, -48, -201, 275, 100, 1, -1, -1, 1000, 480};
+
+
+bool fullyCalibrated_imu(void) {
+    uint8_t system, gyro, accel, mag;
+    bno.getCalibration(&system, &gyro, &accel, &mag);
+    return !(gyro < 3 || accel < 3);
+}
 
 /**************************************************************************/
 /*
     Display the raw calibration offset and radius data
-    */
+*/
 /**************************************************************************/
 void displaySensorOffsets(const adafruit_bno055_offsets_t &calibData)
 {
@@ -44,16 +50,15 @@ void displaySensorOffsets(const adafruit_bno055_offsets_t &calibData)
     Serial.print(calibData.accel_offset_y); Serial.print(" ");
     Serial.print(calibData.accel_offset_z); Serial.print(" ");
 
-    Serial.print("\nMag: ");
-    Serial.print(calibData.mag_offset_x); Serial.print(" ");
-    Serial.print(calibData.mag_offset_y); Serial.print(" ");
-    Serial.print(calibData.mag_offset_z); Serial.print(" ");
-
     Serial.print("\nGyro: ");
     Serial.print(calibData.gyro_offset_x); Serial.print(" ");
     Serial.print(calibData.gyro_offset_y); Serial.print(" ");
     Serial.print(calibData.gyro_offset_z); Serial.print(" ");
 
+    Serial.print("\nMag: ");
+    Serial.print(calibData.mag_offset_x); Serial.print(" ");
+    Serial.print(calibData.mag_offset_y); Serial.print(" ");
+    Serial.print(calibData.mag_offset_z); Serial.print(" ");
 
     Serial.print("\nAccel Radius: ");
     Serial.print(calibData.accel_radius);
@@ -87,15 +92,33 @@ void displaySensorDetails(void)
 
 /**************************************************************************/
 /*
-    Arduino setup function (automatically called at startup)
+   Arduino setup function (automatically called at startup)
+   these are the initial calibration constants for the accelerometer and gyroscope we don't use the
+   magnetometer for the time being, the values of the initial calibration are important and should not
+   be changed. One important thing to note here is that the bno055 auto calibrates itself, so in order
+   to get the initial calibrationdata we can use keystroke 'u' when the device is in a good calibration
+   state
 */
 /**************************************************************************/
+void reset_bno055(void) {
+  if (!bno.begin(Adafruit_BNO055::OPERATION_MODE_IMUPLUS))
+  {
+     Serial.print("Ooops, no BNO055 detected .. Check your wiring or I2C ADDR!");
+     while(1);
+  }
+  delay(1000);
+  displaySensorOffsets(oldCalib);
+  bno.setSensorOffsets(oldCalib);
+  bno.setExtCrystalUse(true);
+  delay(BNO055_SAMPLERATE_DELAY_MS);
+}
+
 void setup_bno055(void)
 {
   Serial.println("Orientation Sensor Test"); Serial.println("");
 
   /* Initialise the sensor */
-  if(!bno.begin())
+  if(!bno.begin(Adafruit_BNO055::OPERATION_MODE_IMUPLUS))
   {
     /* There was a problem detecting the BNO055 ... check your connections */
     Serial.print("Ooops, no BNO055 detected ... Check your wiring or I2C ADDR!");
@@ -104,11 +127,13 @@ void setup_bno055(void)
 
   delay(1000);
 
-  /* Calibration Data, please note the order is accel, mag, gryo, accel raduis, mag raduis*/
-  adafruit_bno055_offsets_t newCalib = {-273, 0, -273, -129, 278, 46, -1, 2, -1, 1000, 750};
-  displaySensorOffsets(newCalib);
+  /* Calibration Data*/
+  //adafruit_bno055_offsets_t newCalib = {-273, 0, -273, -201, 275, 100, 1, -1, -1, 1000, 380};
+  //adafruit_bno055_offsets_t newCalib = {-263, -31, -239, 0, 0, 0, 0, -1, -1, 1000, 480};
+  //adafruit_bno055_offsets_t newCalib = {-199, 15, -134, -201, 275, 100, 1, -1, -1, 1000, 480};
+  displaySensorOffsets(oldCalib);
   Serial.println("\n\nRestoring Calibration data to the BNO055...");
-  bno.setSensorOffsets(newCalib);
+  bno.setSensorOffsets(oldCalib);
 
   /* Use external crystal for better accuracy */
   bno.setExtCrystalUse(true);
@@ -117,17 +142,18 @@ void setup_bno055(void)
   displaySensorDetails();
 
   /* Calibrate Again*/
-  while(!bno.isFullyCalibrated())
-  {
-            delay(BNO055_SAMPLERATE_DELAY_MS);
+  while (!fullyCalibrated_imu()) {
+    delay(BNO055_SAMPLERATE_DELAY_MS);
   }
-  Serial.println("\nFully calibrated!");
-  Serial.println("--------------------------------");
-  Serial.println("New Calibration Results: ");
+}
+
+
+void get_and_display_sensor_offsets(){
+  /* this function will display all 0s as mag is disabled*/
+  adafruit_bno055_offsets_t newCalib = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   bno.getSensorOffsets(newCalib);
   displaySensorOffsets(newCalib);
-  //bno.setSensorOffsets(newCalib);
-  //Serial.println("Please update these Calibration Results into the new calib array!");
+  getcal_bno055();
 }
 
 /**************************************************************************/
@@ -166,28 +192,12 @@ ORI_DATA getori_bno055(void)
   /* Get Orientation from Quaternion Data
   this works much better than getting it directly from chip*/
   imu::Quaternion quat = bno.getQuat();
-  quat.normalize();
-  float temp = quat.x();  quat.x() = -quat.y();  quat.y() = temp;
-  quat.z() = -quat.z();
   imu::Vector<3> ori = quat.toEuler();
 
   ORI_DATA ori_data;
-  ori_data.roll = ori.x()*180.0f/PI;
-  ori_data.pitch = ori.y()*180.0f/PI;
-  ori_data.yaw = ori.z()*180.0f/PI;
-
-  /* The processing sketch expects data as roll, pitch, heading */
-  /*
-  Serial.print(F("Orientation: "));
-  Serial.print((float)ori.x()*180/3.14);
-  Serial.print(F(" "));
-  Serial.print((float)ori.y()*180/3.14);
-  Serial.print(F(" "));
-  Serial.print((float)ori.z()*180/3.14);
-  Serial.println(F(""));
-  */
-
-  delay(BNO055_SAMPLERATE_DELAY_MS);
+  ori_data.roll = ori.x()*180/PI;
+  ori_data.pitch = ori.y()*180/PI;
+  ori_data.yaw = ori.z()*180/PI;
   return ori_data;
 }
 
@@ -205,4 +215,3 @@ void getcal_bno055()
   Serial.print(F(" "));
   Serial.println(mag, DEC);
 }
-
